@@ -7,6 +7,9 @@ import numpy as np
 from tqdm import tqdm
 from itertools import combinations
 
+from FR_System.Embedder.embedder import Embedder
+
+
 def load_CelebA(dir,property = 'None'):
     """
     Load the CelebA dataset.
@@ -127,3 +130,19 @@ def CelebA_create_no_records(data, yes_pairs_path, save_to=None, seed=0):
     if save_to is not None:
         pairs.to_csv(f'{save_to}celeba_negative_paired_data.csv', index=False)
     return pairs
+def batch_convert_data_to_net_input(data_loder, saving_path_and_name, backbone, device):
+    """
+    This function converts the data to the input of the backbone.
+    :param data: Required. The data to convert.
+    :param embedder_name: Required. The name of the backbone to use.
+    :param saving_path_and_name: Required. The path and name to save the converted data.
+    :return: The converted data.
+    """
+    data_vectors = []
+    for i, (image1, image2, label) in enumerate(data_loder):
+        embedder = Embedder(device=device, model_name=backbone, train=False)
+        embedding = embedder(image1, image2)
+        data_vectors.append(embedding)
+    data_vectors = np.vstack(data_vectors)
+    np.save(saving_path_and_name, data_vectors)
+    return data_vectors
