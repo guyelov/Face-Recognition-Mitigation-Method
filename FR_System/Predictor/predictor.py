@@ -13,7 +13,7 @@ class Predictor(nn.Module):
     """
 
     def __init__(self, predictor=None, x_train=None, y_train=None,
-                 nn_save_path="", nn_instance=None, threshold=0.5, embeder=None, device="cpu", n_in=None):
+                 nn_save_path="", nn_instance=None, threshold=0.5, embeder=None, device="cpu", n_in=512):
         """
         The constructor of the predictor class.
         :param predictor: Optional. Type: str. The type of predictor to use.
@@ -61,7 +61,7 @@ class Predictor(nn.Module):
         :param saving_path: Optional. Type: str. The location to save the checkpoints and complete net.
         :return: nn.Sequensial a trained NN.
         """
-        assert x_train.shape[0] == y_train.shape[0]
+        assert x_train.shape[0] == len(y_train)
 
         torch.manual_seed(0)
         np.random.seed(0)
@@ -89,10 +89,8 @@ class Predictor(nn.Module):
             params = list(model.parameters()) + list(embeder.parameters())
             optimizer = torch.optim.Adam(params, lr=lr)
         epoch = 0
-        if not os.path.exists("{}checkpoints".format(saving_path)):
-            os.mkdir("{}checkpoints".format(saving_path))
-        else:
-            model, optimizer, epoch = self.load_checkpoint(saving_path, model, optimizer)
+
+        model, optimizer, epoch = self.load_checkpoint(saving_path, model, optimizer)
 
         model.train()
         if epoch == epoch_num - 1:
@@ -116,13 +114,7 @@ class Predictor(nn.Module):
             torch.cuda.empty_cache()
 
             print('epoch: ', epoch, ' loss: ', loss.item())
-            torch.save({
-                'epoch': epoch,
-                'model_state_dict': model.state_dict(),
-                'optimizer_state_dict': optimizer.state_dict(),
-                'loss': loss,
-                'input_size': n_in,
-            }, "{}state_dict_model_epoch_{}.pt".format("{}checkpoints/".format(saving_path), epoch))
+
 
 
         model.eval()
