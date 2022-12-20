@@ -115,27 +115,6 @@ class FR_Api(torch.nn.Module):
         self.embedder = embedder
         self.predictor = predictor
 
-    def predict(self, image1, image2, proba=False):
-        """
-        The method predicts whether the two images are of the same person.
-        :param image1: Required. Type: ndarray / torch.tensor. An array like object with 4 dimensions:
-                        (batch size, channels, image hight, image width).
-                        For example: (24, 3, 112, 112).
-        :param image2: Required. Type: ndarray / torch.tensor. An array like object with 4 dimensions:
-                        (batch size, channels, image hight, image width).
-                        For example: (24, 3, 112, 112).
-        :param proba: Optional. Type: boolean. Whether to predict the probabilities. Default is False.
-        :return: the probability of them to be the same person.
-        """
-        if torch.is_tensor(image1):
-            image1_emb = self.embedder.predict(image1)
-            image2_emb = self.embedder.predict(image2)
-        else:
-            image1_emb = self.embedder.predict(image1)
-            image2_emb = self.embedder.predict(image2)
-        prediction = self.predictor.predict(image1_emb, image2_emb, proba=proba)
-        return prediction
-
 
     def forward(self, image1, image2):
         """

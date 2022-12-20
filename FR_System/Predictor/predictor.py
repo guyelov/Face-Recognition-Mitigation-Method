@@ -3,7 +3,6 @@ import numpy as np
 import torch
 from torch import nn
 import gc
-from FR_System.Embedder.embedder_tensor import process_image
 from pathlib import Path
 
 
@@ -41,9 +40,6 @@ class Predictor(nn.Module):
                 assert (y_train is not None)
                 self.nn = self.train_NN(x_train, y_train, saving_path=nn_save_path, embeder=self.embedder,
                                         batch_size=64, n_in=n_in)
-
-                # self.nn = self.train_NN(x_train, y_train, saving_path=nn_save_path, embeder=self.embedder,
-                #                         batch_size=3, epoch_num=0)
             else:
                 self.nn = nn_instance
         self.threshold = threshold
@@ -98,11 +94,6 @@ class Predictor(nn.Module):
         else:
             model, optimizer, epoch = self.load_checkpoint(saving_path, model, optimizer)
 
-        if embeder is not None:
-            if not os.path.exists("{}checkpoints_emb".format(saving_path)):
-                os.mkdir("{}checkpoints_emb".format(saving_path))
-            else:
-                model, optimizer, epoch = self.load_checkpoint(saving_path, model, optimizer, embeder)
         model.train()
         if epoch == epoch_num - 1:
             model.eval()
@@ -112,20 +103,8 @@ class Predictor(nn.Module):
                 optimizer.zero_grad()
                 batch_x = x_train[i:i + batch_size]
                 batch_y = y_train[i:i + batch_size]
-                if embeder is not None:
-                    x_1 = [process_image(x) for x in batch_x["path1"]]
-                    x_2 = [process_image(x) for x in batch_x["path2"]]
-                    x1 = np.vstack(x_1)
-                    x2 = np.vstack(x_2)
-                    x1_t = torch.tensor(x1, device=self.device)
-                    x2_t = torch.tensor(x2, device=self.device)
-                    embeding1 = embeder(x1_t)
-                    embeding2 = embeder(x2_t)
-                    input_x = torch.subtract(embeding1, embeding2)
-                    y_pred = model(input_x)
-                else:
-                    input_x = batch_x
-                    y_pred = model(torch.tensor(input_x).float().to(self.device))
+                input_x = batch_x
+                y_pred = model(torch.tensor(input_x).float().to(self.device))
                 loss = lossf(y_pred.float().flatten(),
                              torch.tensor(batch_y.astype(float).flatten(), device=self.device))
                 loss.backward()
@@ -144,15 +123,8 @@ class Predictor(nn.Module):
                 'loss': loss,
                 'input_size': n_in,
             }, "{}state_dict_model_epoch_{}.pt".format("{}checkpoints/".format(saving_path), epoch))
-            if embeder is not None:
-                torch.save({'epoch': epoch,
-                            'model_state_dict': self.embedder.state_dict(),
-                            'optimizer_state_dict': optimizer.state_dict(),
-                            'loss': loss,
-                            },
-                           "{}state_dict_embedder_epoch_{}.pt".format("{}checkpoints_emb/".format(saving_path), epoch))
-        if embeder is not None:
-            self.embedder = embeder.eval()
+
+
         model.eval()
         return model
 
@@ -181,7 +153,7 @@ class Predictor(nn.Module):
     def forward(self, vector,return_proba=False):
         return self.net(vector,return_proba)
 
-    def load_checkpoint(self, path, model, optimizer, embedder=None):
+    def load_checkpoint(self, path, model, optimizer):
         """
         The method loads the last checkpoint from the given path.
         :param path: Required. Type: str. The path to the checkpoint.
@@ -191,12 +163,7 @@ class Predictor(nn.Module):
         :return: The model, optimizer and the epoch number.
         """
 
-        if embedder is not None:
-            embedder_path = "{}checkpoints_emb".format(path)
-            embedder_checkpoint = sorted(Path(embedder_path).iterdir(), key=os.path.getmtime, reverse=True)[0]
-            checkpoint = torch.load(embedder_checkpoint, map_location=self.device)
-            embedder.load_state_dict(checkpoint['model_state_dict'])
-            self.embedder = embedder
+
         preditor_path = "{}checkpoints".format(path)
         last_checkpoint = sorted(Path(preditor_path).iterdir(), key=os.path.getmtime, reverse=True)[0]
         checkpoint = torch.load(last_checkpoint, map_location=self.device)
