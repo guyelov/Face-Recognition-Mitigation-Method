@@ -35,9 +35,7 @@ if __name__ == '__main__':
         image1 = transform_image(image1)
         image2 = transform_image(image2)
         embedded_images = embedder(image1, image2)
-        st.write(embedded_images)
         pred = predictor(embedded_images)[0]
-        st.write(pred[0])
         if pred == 1:
             st.write('The two images are of the same person.')
         else:
