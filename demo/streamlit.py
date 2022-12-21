@@ -30,7 +30,7 @@ if __name__ == '__main__':
         st.write("")
         st.write("Classifying...")
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        predictor = load_predictor("iresnet100_checkpoint.pth", device)
+        predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
         embedder = Embedder(device=device, model_name='iresnet100', train=False)
         image1 = transform_image(image1)
         image2 = transform_image(image2)
