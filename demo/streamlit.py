@@ -24,7 +24,7 @@ if __name__ == '__main__':
         st.write('Please upload two images.')
     else:
         image1 = PIL.Image.open(file1)
-        image2 = PIL.Image.open(file1)
+        image2 = PIL.Image.open(file2)
         st.image(image1, caption='Uploaded Image.', use_column_width=True)
         st.image(image2, caption='Uploaded Image.', use_column_width=True)
         st.write("")
