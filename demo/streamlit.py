@@ -9,12 +9,14 @@ from torchvision import transforms
 from data_utils_demo import load_predictor
 from facenet_pytorch import MTCNN
 
+
 def transform_image(image):
     my_transforms = transforms.Compose([transforms.Resize((112, 112)),
                                         transforms.ToTensor(),
                                         transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])])
     image = my_transforms(image).unsqueeze(0)
     return image
+
 
 if __name__ == '__main__':
     st.title('Face Recognition')
@@ -29,8 +31,9 @@ if __name__ == '__main__':
     else:
         image1 = PIL.Image.open(file1)
         image2 = PIL.Image.open(file2)
-        image1 = mtcnn(image1)
-        image2 = mtcnn(image2)
+        transform = transforms.ToPILImage()
+        image1 = transform(mtcnn(image1)[0])
+        image2 = transform(mtcnn(image2)[0])
         st.write(image1)
 
         st.image(image1, caption='Uploaded Image.', use_column_width=True)
@@ -44,7 +47,7 @@ if __name__ == '__main__':
         image2 = transform_image(image2)
         embedded_images = embedder(image1, image2)
         pred = predictor(embedded_images)[0]
-        st.write(predictor(embedded_images,return_proba=True))
+        st.write(predictor(embedded_images, return_proba=True))
         if pred == 1:
             st.write('The two images are of the same person.')
         else:
