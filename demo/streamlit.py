@@ -8,10 +8,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
-from FR_System.Embedder.embedder import Embedder
-from FR_System.Predictor.predictor import Predictor
+import FR_System.Embedder.embedder as embedder
+import FR_System.Predictor.predictor as predictor
 from torchvision import transforms
-from Data.data_utils import load_predictor
+import Data.data_utils as data_utils
 
 def transform_image(image):
     my_transforms = transforms.Compose([transforms.Resize((112, 112)),
