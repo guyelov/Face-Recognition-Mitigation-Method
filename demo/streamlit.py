@@ -34,7 +34,7 @@ if __name__ == '__main__':
         embedder = Embedder(device=device, model_name='iresnet100', train=False)
         image1 = transform_image(image1)
         image2 = transform_image(image2)
-        embedded_images = embedder(image1.transpose(0, 1).flip(1), image2.transpose(0, 1).flip(1))
+        embedded_images = embedder(image1, image2)
         pred = predictor(embedded_images)[0]
         if pred == 1:
             st.write('The two images are of the same person.')
