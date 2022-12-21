@@ -4,7 +4,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import torch
-from FR_System.Embedder.embedder import Embedder
+from target_model_creation import target_model_creation
 from torchvision import transforms
 import Data.data_utils as data_utils
 
