@@ -44,8 +44,6 @@ if __name__ == '__main__':
             device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
             predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
             embedder = Embedder(device=device, model_name='iresnet100', train=False)
-            image1 = transform_image(image1)
-            image2 = transform_image(image2)
             embedded_images = embedder(image1, image2)
             pred = predictor(embedded_images)[0]
             st.write(predictor(embedded_images, return_proba=True))
