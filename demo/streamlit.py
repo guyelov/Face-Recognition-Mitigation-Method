@@ -23,8 +23,8 @@ if __name__ == '__main__':
     if file1 is None or file2 is None:
         st.write('Please upload two images.')
     else:
-        image1 = PIL.Image.open(file1)
-        image2 = PIL.Image.open(file2)
+        image1 = PIL.Image.open(file1).rotate(90)
+        image2 = PIL.Image.open(file2).rotate(90)
         st.image(image1, caption='Uploaded Image.', use_column_width=True)
         st.image(image2, caption='Uploaded Image.', use_column_width=True)
         st.write("")
@@ -34,7 +34,7 @@ if __name__ == '__main__':
         embedder = Embedder(device=device, model_name='iresnet100', train=False)
         image1 = transform_image(image1)
         image2 = transform_image(image2)
-        embedded_images = embedder(image1, image2)
+        embedded_images = embedder(image1.transpose(0, 1).flip(1), image2.transpose(0, 1).flip(1))
         pred = predictor(embedded_images)[0]
         if pred == 1:
             st.write('The two images are of the same person.')
