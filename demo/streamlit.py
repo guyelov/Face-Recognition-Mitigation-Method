@@ -1,5 +1,4 @@
-from PIL.Image import Image
-
+import PIL.Image
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -24,8 +23,8 @@ if __name__ == '__main__':
     if file1 is None or file2 is None:
         st.write('Please upload two images.')
     else:
-        image1 = Image.open(file1)
-        image2 = Image.open(file2)
+        image1 = PIL.Image.open(file1)
+        image2 = PIL.Image.open(file1)
         st.image(image1, caption='Uploaded Image.', use_column_width=True)
         st.image(image2, caption='Uploaded Image.', use_column_width=True)
         st.write("")
