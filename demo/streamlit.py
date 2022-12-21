@@ -24,7 +24,7 @@ if __name__ == '__main__':
     file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    mtcnn = MTCNN(image_size=112, margin=0, keep_all=True, post_process=False, device=device)
+    mtcnn = MTCNN(image_size=112, margin=0, keep_all=True, post_process=True, device=device)
 
     if file1 is None or file2 is None:
         st.write('Please upload two images.')
