@@ -4,10 +4,12 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import torch
-from target_model_creation import target_model_creation
+from embedder_demo import Embedder
+from predictor_demo import Predictor
+
 from torchvision import transforms
 import Data.data_utils as data_utils
-
+from data_utils_demo import load_predictor
 def transform_image(image):
     my_transforms = transforms.Compose([transforms.Resize((112, 112)),
                                         transforms.ToTensor(),
