@@ -1,45 +1,15 @@
 from tqdm import tqdm
-
-from FR_System.Embedder.embedder import Embedder, process_image
-# from FR_System.Embedder.embedder_tensor import Embedder, process_image
-from FR_System.Predictor.predictor_tensor import Predictor
-# from FR_System.Predictor.predictor import Predictor
-from Defenses.Backbone_Generate import predict_multiple_backbones, embedder_generator
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score
-import numpy as np
 import torch
 
+from FR_System.Embedder.embedder import Embedder
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
-
-def test_prediction(x_test, fr, multiple_backbones=False, seed=None):
-    """
-    Get the FR system for the test set given.
-    :param x_test: Required. Type: Dataframe. Dataframe of pairs path.
-    :param fr: Required. Type: FR_System. The used face recognition system.
-    :return: ndarray of the predictions.
-    """
-    pred = []
-    for i, row in x_test.iterrows():
-        path1 = row["path1"]
-        path2 = row["path2"]
-        np_image1 = process_image(path1)
-        np_image2 = process_image(path2)
-        if multiple_backbones:
-            prediction = predict_multiple_backbones(np_image1, np_image2, fr, i, seed=seed)
-        else:
-            prediction = fr.predict(np_image1, np_image2)
-        if torch.is_tensor(prediction):
-            pred.append(prediction.detach().numpy()[0])
-        else:
-            pred.append(prediction)
-    pred = np.asarray(pred).reshape((len(pred), 1))
-    return pred
 
 
 def batch_test_prediction(fr, data_loder, multiple_backbones=False, seed=None, backbone_list=None):
@@ -52,20 +22,14 @@ def batch_test_prediction(fr, data_loder, multiple_backbones=False, seed=None, b
     :return: ndarray of the predictions.
     """
     # pred = []
-    if multiple_backbones:
-        backbones_list = embedder_generator(seed, backbone_list)
+
     pred = torch.tensor([], device=device)
     with torch.no_grad():
         for i, (image1, image2, label) in enumerate(tqdm(data_loder)):
-            if multiple_backbones:
-                backbone_index = (i + len(backbones_list)) % len(backbones_list)
-                embedder = Embedder(device=device, model_name=backbones_list[backbone_index], train=False)
-                embedding = embedder(image1, image2)
-                prediction = fr.predictor(embedding)
-            else:
-                embedder = fr.embedder
-                embedding = embedder(image1, image2)
-                prediction = fr.predictor(embedding)
+
+            embedder = fr.embedder
+            embedding = embedder(image1, image2)
+            prediction = fr.predictor(embedding)
             if torch.is_tensor(prediction):
                 pred = torch.cat((pred, prediction), 0)
             else:
