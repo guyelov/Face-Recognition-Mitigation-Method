@@ -4,12 +4,7 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-import torchvision
-import FR_System.Embedder.embedder as embedder
-import FR_System.Predictor.predictor as predictor
+from FR_System.Embedder.embedder import Embedder
 from torchvision import transforms
 import Data.data_utils as data_utils
 
