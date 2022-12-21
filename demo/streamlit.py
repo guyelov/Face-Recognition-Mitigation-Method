@@ -7,6 +7,8 @@ from embedder_demo import Embedder
 from predictor_demo import Predictor
 from torchvision import transforms
 from data_utils_demo import load_predictor
+from facenet_pytorch import MTCNN
+
 def transform_image(image):
     my_transforms = transforms.Compose([transforms.Resize((112, 112)),
                                         transforms.ToTensor(),
@@ -19,11 +21,19 @@ if __name__ == '__main__':
     st.write('This is a simple image classification web app to predict whether a face is real or fake.')
     file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    mtcnn = MTCNN(image_size=112, margin=0, keep_all=True, post_process=False, device=device)
+
     if file1 is None or file2 is None:
         st.write('Please upload two images.')
     else:
         image1 = PIL.Image.open(file1)
         image2 = PIL.Image.open(file2)
+        image1 = mtcnn(image1)
+        image2 = mtcnn(image2)
+        st.image(image1, channels="RGB")
+        st.image(image2, channels="RGB")
+
         st.image(image1, caption='Uploaded Image.', use_column_width=True)
         st.image(image2, caption='Uploaded Image.', use_column_width=True)
         st.write("")
