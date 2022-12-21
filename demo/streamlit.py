@@ -35,14 +35,14 @@ if __name__ == '__main__':
 
         st.image(image1, caption='Uploaded Image.', use_column_width=True)
         st.image(image2, caption='Uploaded Image.', use_column_width=True)
-        # image1 = mtcnn(image1).unsqueeze(0)
-        # image2 = mtcnn(image2).unsqueeze(0)
+        image1 = mtcnn(image1).unsqueeze(0)
+        image2 = mtcnn(image2).unsqueeze(0)
         if image1 is None or image2 is None:
             st.write('Please upload two images of faces.')
         else:
             st.write("Classifying...")
-            image1 = transform_image(image1)
-            image2 = transform_image(image2)
+            # image1 = transform_image(image1)
+            # image2 = transform_image(image2)
             device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
             predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
             embedder = Embedder(device=device, model_name='iresnet100', train=False)
