@@ -245,7 +245,7 @@ def _iresnet(arch, block, layers, pretrained, progress, **kwargs):
     if pretrained:
         if arch == "iresnet100":
 
-            model.load_state_dict(copy.deepcopy(torch.load("/sise/home/guyelov/iresnet100.pth")))
+            model.load_state_dict(copy.deepcopy(torch.load("C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\iresnet100.pth")))
         if arch == 'iresnet50':
             model.load_state_dict(copy.deepcopy(torch.load("/sise/home/guyelov/model_ir_se50.pth",map_location='cpu')))
     return model
@@ -285,6 +285,5 @@ def iresnet100(pretrained=False, progress=True, **kwargs):
     :param kwargs: Optional. Additional arguments.
     :return: IResNet object. iresnet model.
     """
-    print('using irestnet100')
     return _iresnet('iresnet100', IBasicBlock, [3, 13, 30, 3], pretrained, progress,
                     **kwargs)
