@@ -31,8 +31,7 @@ if __name__ == '__main__':
         image2 = PIL.Image.open(file2)
         image1 = mtcnn(image1)
         image2 = mtcnn(image2)
-        st.image(image1, channels="RGB")
-        st.image(image2, channels="RGB")
+        st.write(image1)
 
         st.image(image1, caption='Uploaded Image.', use_column_width=True)
         st.image(image2, caption='Uploaded Image.', use_column_width=True)
