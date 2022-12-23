@@ -35,10 +35,29 @@ if __name__ == '__main__':
 
         st.image(image1, caption='Uploaded Image.', use_column_width=True)
         st.image(image2, caption='Uploaded Image.', use_column_width=True)
-        image1 = mtcnn(image1).squeeze(1)
-        image2 = mtcnn(image2).squeeze(1)
-        if image1 is None or image2 is None:
-            st.write('Please upload two images of faces.')
+        image1_face = mtcnn(image1)
+        image2_face = mtcnn(image2)
+        if image1_face is None or image2_face is None:
+            image1_face = mtcnn(image1.rotate(90))
+            image2_face = mtcnn(image2.rotate(90))
+            if image1 is None or image2 is None:
+
+                st.write('Please upload two images of faces.')
+            else:
+                st.write("Classifying...")
+                # image1 = transform_image(image1)
+                # image2 = transform_image(image2)
+                device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+                predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
+                embedder = Embedder(device=device, model_name='iresnet100', train=False)
+                embedded_images = embedder(image1_face.squeeze(0), image2_face.squeeze(0))
+                pred = predictor(embedded_images)[0]
+                st.write(predictor(embedded_images, return_proba=True))
+                if pred == 1:
+                    st.write('The two images are of the same person.')
+                else:
+                    st.write('The two images are of different people.')
+
         else:
             st.write("Classifying...")
             # image1 = transform_image(image1)
@@ -46,7 +65,7 @@ if __name__ == '__main__':
             device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
             predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
             embedder = Embedder(device=device, model_name='iresnet100', train=False)
-            embedded_images = embedder(image1, image2)
+            embedded_images = embedder(image1_face.squeeze(0), image2_face.squeeze(0))
             pred = predictor(embedded_images)[0]
             st.write(predictor(embedded_images, return_proba=True))
             if pred == 1:
