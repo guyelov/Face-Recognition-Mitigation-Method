@@ -26,7 +26,8 @@ if __name__ == '__main__':
     # Add the image to the sidebar
     # Add the image to the bottom left corner of the app
     st.markdown("<div style='position: fixed; bottom: 0; left: 0;'>", unsafe_allow_html=True)
-    st.image(logo, width=100)    file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
+    st.image(logo, width=100)
+    file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
