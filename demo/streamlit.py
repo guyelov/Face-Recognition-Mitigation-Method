@@ -28,25 +28,27 @@ if __name__ == '__main__':
     file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
-    image1 = PIL.Image.open(file1)
-    image2 = PIL.Image.open(file2)
-
-
-    st.image(image1, caption='Uploaded Image.', use_column_width=True)
-    st.image(image2, caption='Uploaded Image.', use_column_width=True)
-
-    st.write("Classifying...")
-    image1 = transform_image(image1)
-    image2 = transform_image(image2)
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
-    embedder = Embedder(device=device, model_name='iresnet100', train=False)
-    embedded_images = embedder(image1, image2)
-    pred = predictor(embedded_images)[0]
-    st.write(predictor(embedded_images, return_proba=True))
-    if pred == 1:
-        st.write('The two images are of the same person.')
+    if file1 is None and file2 is None:
+        st.write("Please upload two face images")
     else:
-        st.write('The two images are of different people.')
-    st.image(logo, width=100)
+        image1 = PIL.Image.open(file1)
+        image2 = PIL.Image.open(file2)
+
+
+        st.image(image1, caption='Uploaded Image.', use_column_width=True)
+        st.image(image2, caption='Uploaded Image.', use_column_width=True)
+
+        st.write("Classifying...")
+        image1 = transform_image(image1)
+        image2 = transform_image(image2)
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
+        embedder = Embedder(device=device, model_name='iresnet100', train=False)
+        embedded_images = embedder(image1, image2)
+        pred = predictor(embedded_images)[0]
+        st.write(predictor(embedded_images, return_proba=True))
+        if pred == 1:
+            st.write('The two images are of the same person.')
+        else:
+            st.write('The two images are of different people.')
+        st.image(logo, width=100)
