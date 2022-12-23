@@ -51,4 +51,4 @@ if __name__ == '__main__':
             st.write('The two images are of the same person.')
         else:
             st.write('The two images are of different people.')
-    st.image(logo, width=100)
+    st.image(logo, width=20)
