@@ -21,6 +21,10 @@ def transform_image(image):
 if __name__ == '__main__':
     st.title('Face Recognition')
     st.write('This is a simple image classification web app to predict whether a face is real or fake.')
+    logo = PIL.Image.open("logo.png")
+
+    # Add the image to the sidebar
+    st.sidebar.image(logo, width=100)
     file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
