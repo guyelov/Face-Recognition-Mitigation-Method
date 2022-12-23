@@ -21,7 +21,7 @@ def transform_image(image):
 if __name__ == '__main__':
     st.title('Face Recognition')
     st.write('This is a simple image classification web app to predict whether a face is real or fake.')
-    logo = PIL.Image.open("logo.png")
+    logo = PIL.Image.open("demo/logo.png")
 
     # Add the image to the sidebar
     st.sidebar.image(logo, width=100)
