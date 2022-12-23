@@ -22,6 +22,20 @@ if __name__ == '__main__':
     st.title('Face Recognition')
     st.write('This is a simple image classification web app to predict whether a face is real or fake.')
     logo = PIL.Image.open("demo/logo.png")
+    st.markdown(
+        """
+        <style>
+            body {
+                background-image: url('logo.png');
+                background-size: cover;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # Add a text element to the page
+    st.text("Welcome to my Streamlit app!")
 
     # Add the image to the sidebar
     # Add the image to the bottom left corner of the app
