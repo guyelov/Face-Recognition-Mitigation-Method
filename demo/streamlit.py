@@ -30,7 +30,7 @@ if __name__ == '__main__':
     file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    lfw_path = 'demo/Data/lfw-py/lfw_funneled/'
+    lfw_path = "demo/Data/lfw-py/lfw_funneled"
     if lfw_path:
         # List the images in the LFW folder
         image_files = [f for f in os.listdir(lfw_path) if f.endswith(".jpg") or f.endswith(".png")]
