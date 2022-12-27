@@ -1,3 +1,5 @@
+import os
+
 import PIL.Image
 import streamlit as st
 import pandas as pd
@@ -22,20 +24,7 @@ if __name__ == '__main__':
     st.title('Face Recognition')
     st.write('This is a simple image classification web app to predict whether a face is real or fake.')
     logo = PIL.Image.open("demo/logo.png")
-    st.markdown(
-        """
-        <style>
-            body {
-                background-image: url('logo.png');
-                background-size: cover;
-            }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
 
-    # Add a text element to the page
-    st.text("Welcome to my Streamlit app!")
 
     # Add the image to the sidebar
     # Add the image to the bottom left corner of the app
@@ -50,7 +39,15 @@ if __name__ == '__main__':
         else:
             image1 = PIL.Image.open(file1)
             image2 = PIL.Image.open(file2)
-
+            lfw_path = 'demo/Data/lfw-py/lfw_funneled/'
+            if lfw_path:
+                # List the images in the LFW folder
+                image_files = [f for f in os.listdir(lfw_path) if f.endswith(".jpg") or f.endswith(".png")]
+                file1_select = st.selectbox("Select the first image from the LFW folder:", image_files)
+                file2_select = st.selectbox("Select the second image from the LFW folder:", image_files)
+                # Load the selected images from the LFW folder
+                image1 = PIL.Image.open(os.path.join(lfw_path, file1_select))
+                image2 = PIL.Image.open(os.path.join(lfw_path, file2_select))
 
             st.image(image1, caption='Uploaded Image.', use_column_width=True)
             st.image(image2, caption='Uploaded Image.', use_column_width=True)
