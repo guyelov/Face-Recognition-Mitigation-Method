@@ -44,6 +44,7 @@ if __name__ == '__main__':
         file2_image = st.selectbox("Select the image:", image_files)
         # Load the selected images from the LFW folder
         image1 = PIL.Image.open(os.path.join(lfw_path, file1_select, file1_image))
+        image2 = PIL.Image.open(os.path.join(lfw_path, file2_select, file2_image))
     if file1 is None and file2 is None and not lfw_path:
         st.write("Please upload two face images")
     else:
