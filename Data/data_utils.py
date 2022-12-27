@@ -1,16 +1,20 @@
 import os
 import random
 import pandas as pd
+import torch
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 from sklearn.model_selection import train_test_split
 import glob
 import numpy as np
+from torch import nn
 from tqdm import tqdm
 from itertools import combinations
 
 from FR_System.Embedder.embedder import Embedder
+from FR_System.Predictor.predictor import Predictor
 
-
-def load_CelebA(dir,property = 'None'):
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+def load_CelebA(dir, property='None'):
     """
     Load the CelebA dataset.
     :param dir: Required. Type: str. The path where the CelebA images are.
@@ -30,6 +34,7 @@ def load_CelebA(dir,property = 'None'):
     path_df["path"] = files
     df = path_df.merge(id_df, on='path').merge(property_df, on='path')
     return df
+
 
 def CelebA_split_ids_train_test(dir, property="None", seed=1):
     """
@@ -70,6 +75,7 @@ def CelebA_split_ids_train_test(dir, property="None", seed=1):
         attack_test_ids = np.concatenate((minority_attack_test_ids['id'].values, majority_attack_test_ids['id'].values))
         return model_train_ids, attack_train_ids, attack_test_ids, celeba_df
 
+
 def CelebA_create_yes_records(data, save_to=None):
     """
     Create data of pairs of images from the same person.
@@ -95,6 +101,7 @@ def CelebA_create_yes_records(data, save_to=None):
     if save_to is not None:
         df.to_csv(f'{save_to}celeba_positive_paired_data.csv', index=False)
     return df
+
 
 def CelebA_create_no_records(data, yes_pairs_path, save_to=None, seed=0):
     """
@@ -130,7 +137,9 @@ def CelebA_create_no_records(data, yes_pairs_path, save_to=None, seed=0):
     if save_to is not None:
         pairs.to_csv(f'{save_to}celeba_negative_paired_data.csv', index=False)
     return pairs
-def batch_convert_data_to_net_input(data_loder, saving_path_and_name, backbone, device):
+
+
+def convert_images_to_embedded_input(data_loader, backbone, device):
     """
     This function converts the data to the input of the backbone.
     :param data: Required. The data to convert.
@@ -139,10 +148,82 @@ def batch_convert_data_to_net_input(data_loder, saving_path_and_name, backbone, 
     :return: The converted data.
     """
     data_vectors = []
-    for i, (image1, image2, label) in enumerate(data_loder):
-        embedder = Embedder(device=device, model_name=backbone, train=False)
-        embedding = embedder(image1, image2)
-        data_vectors.append(embedding)
+    print(f'using the backbone: {backbone}')
+    for i, (image1, image2, label) in enumerate(tqdm(data_loader)):
+        with torch.no_grad():
+            image1 = image1.to(device)
+            image2 = image2.to(device)
+            embedder = Embedder(device=device, model_name=backbone, train=False)
+            embedding = embedder(image1, image2)
+            data_vectors.append(embedding)
     data_vectors = np.vstack(data_vectors)
-    np.save(saving_path_and_name, data_vectors)
+    np.save(f'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\{backbone}_data_vectors.npy', data_vectors)
     return data_vectors
+def batch_test_prediction(fr, data_loder):
+
+    pred = torch.tensor([], device=device)
+    with torch.no_grad():
+        for i, (image1, image2, label) in enumerate(tqdm(data_loder)):
+            embedder = fr.embedder
+            embedding = embedder(image1, image2)
+            prediction = fr.predictor(embedding)
+            if torch.is_tensor(prediction):
+                pred = torch.cat((pred, prediction), 0)
+            else:
+                pred = torch.cat((pred, torch.tensor(prediction, device=device)), 0)
+    pred = pred.detach().cpu().numpy().reshape((len(pred), 1))
+    return pred
+def evaluation(pred, labels):
+    """
+    The method evaluates results between predictions and labels.
+    :param pred: Required. Type: ndarray. An array like object with the same dimensions as labels.
+    :param labels: Required. Type: ndarray. An array like object with the same dimensions as pred.
+    :return: dict. Evaluation results.
+    """
+    evaluation = {}
+    labels = labels
+
+
+    conf_mat = confusion_matrix(labels, pred)
+    evaluation['tn'] = conf_mat[0][0]
+    evaluation['fp'] = conf_mat[0][1]
+    evaluation['fn'] = conf_mat[1][0]
+    evaluation['tp'] = conf_mat[1][1]
+    evaluation['acc'] = accuracy_score(labels, pred)
+    evaluation['precision'] = precision_score(labels, pred)
+    evaluation['recall'] = recall_score(labels, pred)
+    evaluation['f1'] = f1_score(labels, pred)
+    evaluation['auc'] = roc_auc_score(labels, pred)
+    return evaluation
+def load_predictor(traget_model_path,device = 'cpu'):
+    """
+    The function loads pre-trained predictor.
+    :param traget_model_path: Required. str. The path stores weights of the target model.
+    """
+    n_in, n_out = 512, 1
+    NN = nn.Sequential(
+        nn.Linear(n_in, 512).to(device),
+        nn.ReLU().to(device),
+        nn.Linear(512, 256).to(device),
+        nn.ReLU().to(device),
+        nn.Linear(256, 128).to(device),
+        nn.BatchNorm1d(128).to(device),
+        nn.ReLU().to(device),
+        nn.Linear(128, 64).to(device),
+        nn.ReLU().to(device),
+        nn.Linear(64, 32).to(device),
+        nn.ReLU().to(device),
+        nn.Linear(32, 16).to(device),
+        nn.ReLU().to(device),
+        nn.Linear(16, 8).to(device),
+        nn.ReLU().to(device),
+        nn.Linear(8, n_out).to(device),
+        nn.Sigmoid().to(device))
+    optimizer = torch.optim.Adam(NN.parameters(), lr=0.0001, weight_decay=0.0001)
+
+    checkpoint = torch.load(traget_model_path, map_location=device)
+
+    NN.load_state_dict(checkpoint['model_state_dict'])
+    NN.eval()
+    predictor = Predictor(predictor="NN", nn_instance=NN, threshold=0.5, device=device)
+    return predictor
