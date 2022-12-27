@@ -32,13 +32,18 @@ if __name__ == '__main__':
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     lfw_path = "demo/Data/lfw-py/lfw_funneled"
     if lfw_path:
-        # List the images in the LFW folder
-        image_files = [f for f in os.listdir(lfw_path) if f.endswith(".jpg") or f.endswith(".png")]
-        file1_select = st.selectbox("Select the first image from the LFW folder:", image_files)
-        file2_select = st.selectbox("Select the second image from the LFW folder:", image_files)
+        # List the subfolders in the LFW folder
+        person_folders = [f for f in os.listdir(lfw_path) if os.path.isdir(os.path.join(lfw_path, f))]
+        # List the images in the first selected subfolder
+        file1_select = st.selectbox("Select the first image from the LFW folder:", person_folders)
+        image_files = [f for f in os.listdir(os.path.join(lfw_path, file1_select)) if f.endswith(".jpg") or f.endswith(".png")]
+        file1_image = st.selectbox("Select the image:", image_files)
+        # List the images in the second selected subfolder
+        file2_select = st.selectbox("Select the second image from the LFW folder:", person_folders)
+        image_files = [f for f in os.listdir(os.path.join(lfw_path, file2_select)) if f.endswith(".jpg") or f.endswith(".png")]
+        file2_image = st.selectbox("Select the image:", image_files)
         # Load the selected images from the LFW folder
-        image1 = PIL.Image.open(os.path.join(lfw_path, file1_select))
-        image2 = PIL.Image.open(os.path.join(lfw_path, file2_select))
+        image1 = PIL.Image.open(os.path.join(lfw_path, file1_select, file1_image))
     if file1 is None and file2 is None and not lfw_path:
         st.write("Please upload two face images")
     else:
