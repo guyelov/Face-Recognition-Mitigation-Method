@@ -13,7 +13,9 @@ class Predictor(nn.Module):
     """
 
     def __init__(self, predictor=None, x_train=None, y_train=None,
-                 nn_save_path="", nn_instance=None, threshold=0.5, embeder=None, device="cpu", n_in=512):
+                 nn_save_path="", nn_instance=None, threshold=0.5, embeder=None, device="cpu", n_in=512,
+                 pretrained_predicor=None,
+                 batch_size=64, epochs_num=30):
         """
         The constructor of the predictor class.
         :param predictor: Optional. Type: str. The type of predictor to use.
@@ -33,22 +35,22 @@ class Predictor(nn.Module):
         self.predictor = predictor
         self.device = device
         self.embedder = embeder
+        self.nn_instance = None
+        if pretrained_predicor:
+            self.pretrained_predicor = pretrained_predicor
 
         if predictor == "NN":
             if nn_instance is None:
                 assert (x_train is not None)
                 assert (y_train is not None)
                 self.nn = self.train_NN(x_train, y_train, saving_path=nn_save_path, embeder=self.embedder,
-                                        batch_size=64, n_in=n_in)
+                                        n_in=n_in, epoch_num=epochs_num, batch_size=batch_size)
             else:
+                self.nn_instance = nn_instance
                 self.nn = nn_instance
         self.threshold = threshold
 
-
-
-
-
-    def train_NN(self, x_train, y_train, lossf=torch.nn.BCEWithLogitsLoss(), batch_size=64, epoch_num=30,
+    def train_NN(self, x_train, y_train, lossf=torch.nn.BCEWithLogitsLoss(), batch_size=128, epoch_num=40,
                  lr=0.0001, saving_path="", embeder=None, n_in=None):
         """
         Train an NN to use as a predictor.
@@ -68,29 +70,30 @@ class Predictor(nn.Module):
         if n_in is None:
             n_in = x_train.shape[1]
         n_out = 1
-        model = nn.Sequential(
-            nn.Linear(n_in, 256).to(self.device),
-            nn.ReLU().to(self.device),
-            nn.Linear(256, 128).to(self.device),
-            nn.ReLU().to(self.device),
-            nn.Linear(128, 64).to(self.device),
-            nn.ReLU().to(self.device),
-            nn.Linear(64, 32).to(self.device),
-            nn.ReLU().to(self.device),
-            nn.Linear(32, 16).to(self.device),
-            nn.ReLU().to(self.device),
-            nn.Linear(16, 8).to(self.device),
-            nn.ReLU().to(self.device),
-            nn.Linear(8, n_out).to(self.device),
-            nn.Sigmoid().to(self.device))
-        if embeder is None:
-            optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.0001)
+        if self.nn_instance:
+            model = self.nn_instance
         else:
-            params = list(model.parameters()) + list(embeder.parameters())
-            optimizer = torch.optim.Adam(params, lr=lr)
-        epoch = 0
+            model = nn.Sequential(
+                nn.Linear(n_in, 512).to(self.device),
+                nn.ReLU().to(self.device),
+                nn.Linear(512, 256).to(self.device),
+                nn.ReLU().to(self.device),
+                nn.Linear(256, 128).to(self.device),
+                nn.BatchNorm1d(128).to(self.device),
+                nn.ReLU().to(self.device),
+                nn.Linear(128, 64).to(self.device),
+                nn.ReLU().to(self.device),
+                nn.Linear(64, 32).to(self.device),
+                nn.ReLU().to(self.device),
+                nn.Linear(32, 16).to(self.device),
+                nn.ReLU().to(self.device),
+                nn.Linear(16, 8).to(self.device),
+                nn.ReLU().to(self.device),
+                nn.Linear(8, n_out).to(self.device),
+                nn.Sigmoid().to(self.device))
+        optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=0.0001)
 
-        model, optimizer, epoch = self.load_checkpoint(saving_path, model, optimizer)
+        epoch = 0
 
         model.train()
         if epoch == epoch_num - 1:
@@ -104,19 +107,19 @@ class Predictor(nn.Module):
                 input_x = batch_x
                 y_pred = model(torch.tensor(input_x).float().to(self.device))
                 loss = lossf(y_pred.float().flatten(),
-                             torch.tensor(batch_y.astype(float).flatten(), device=self.device))
+                             torch.tensor(batch_y, device=self.device, dtype=torch.float))
                 loss.backward()
                 optimizer.step()
                 self.embedder = embeder
-                print('epoch: ', epoch, ' part: ', i, ' loss: ', loss.item())
+                # print('epoch: ', epoch, ' part: ', i, ' loss: ', loss.item())
 
             gc.collect()
             torch.cuda.empty_cache()
 
             print('epoch: ', epoch, ' loss: ', loss.item())
-
-
-
+        torch.save({'epoch': epoch, 'model_state_dict': model.state_dict(),
+                    'optimizer_state_dict': optimizer.state_dict(), 'loss': loss},
+                   saving_path + "checkpoint.pth")
         model.eval()
         return model
 
@@ -139,11 +142,11 @@ class Predictor(nn.Module):
             return proba.flatten().tolist()
 
         else:
-            lst =list(map(int, (proba >= self.threshold).reshape(-1)))
+            lst = list(map(int, (proba >= self.threshold).reshape(-1)))
             return list(map(int, (proba >= self.threshold).reshape(-1)))
 
-    def forward(self, vector,return_proba=False):
-        return self.net(vector,return_proba)
+    def forward(self, vector, return_proba=False):
+        return self.net(vector, return_proba)
 
     def load_checkpoint(self, path, model, optimizer):
         """
@@ -154,7 +157,6 @@ class Predictor(nn.Module):
         :param embedder: Optional. Type: nn.Sequential. The embedder to load.
         :return: The model, optimizer and the epoch number.
         """
-
 
         preditor_path = "{}checkpoints".format(path)
         last_checkpoint = sorted(Path(preditor_path).iterdir(), key=os.path.getmtime, reverse=True)[0]
