@@ -25,7 +25,6 @@ if __name__ == '__main__':
     st.write('This is a simple image classification web app to predict whether a face is real or fake.')
     logo = PIL.Image.open("demo/logo.png")
 
-
     # Add the image to the sidebar
     # Add the image to the bottom left corner of the app
     file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
