@@ -30,23 +30,24 @@ if __name__ == '__main__':
     file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    if file1 is None and file2 is None:
+    lfw_path = 'demo/Data/lfw-py/lfw_funneled/'
+    if lfw_path:
+        # List the images in the LFW folder
+        image_files = [f for f in os.listdir(lfw_path) if f.endswith(".jpg") or f.endswith(".png")]
+        file1_select = st.selectbox("Select the first image from the LFW folder:", image_files)
+        file2_select = st.selectbox("Select the second image from the LFW folder:", image_files)
+        # Load the selected images from the LFW folder
+        image1 = PIL.Image.open(os.path.join(lfw_path, file1_select))
+        image2 = PIL.Image.open(os.path.join(lfw_path, file2_select))
+    if file1 is None and file2 is None and not lfw_path:
         st.write("Please upload two face images")
     else:
-        if file2 is None:
+        if file2 is None and not lfw_path:
             st.write("Please upload the second image")
         else:
-            image1 = PIL.Image.open(file1)
-            image2 = PIL.Image.open(file2)
-            lfw_path = 'demo/Data/lfw-py/lfw_funneled/'
-            if lfw_path:
-                # List the images in the LFW folder
-                image_files = [f for f in os.listdir(lfw_path) if f.endswith(".jpg") or f.endswith(".png")]
-                file1_select = st.selectbox("Select the first image from the LFW folder:", image_files)
-                file2_select = st.selectbox("Select the second image from the LFW folder:", image_files)
-                # Load the selected images from the LFW folder
-                image1 = PIL.Image.open(os.path.join(lfw_path, file1_select))
-                image2 = PIL.Image.open(os.path.join(lfw_path, file2_select))
+            # image1 = PIL.Image.open(file1)
+            # image2 = PIL.Image.open(file2)
+            #
 
             st.image(image1, caption='Uploaded Image.', use_column_width=True)
             st.image(image2, caption='Uploaded Image.', use_column_width=True)
