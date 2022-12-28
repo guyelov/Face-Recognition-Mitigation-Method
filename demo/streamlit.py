@@ -60,8 +60,8 @@ if __name__ == '__main__':
         image1 = PIL.Image.open(os.path.join(lfw_path, image_1))
         image2 = PIL.Image.open(os.path.join(lfw_path, image_2))
         # Show the image
-        st.image(image1, caption='Image 1', use_column_width=True)
-        st.image(image2, caption='Image 2', use_column_width=True)
+        st.image(image1, caption='Image 1')
+        st.image(image2, caption='Image 2')
         st.write("Classifying...")
         image1 = transform_image(image1)
         image2 = transform_image(image2)
