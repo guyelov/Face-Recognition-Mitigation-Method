@@ -71,9 +71,11 @@ if __name__ == '__main__':
         embedded_images = embedder(image1, image2)
         pred = predictor(embedded_images)[0]
         if pred == 1:
-            st.write('The two images are of the same person.')
+            st.markdown("The two images are of the same person ✅")
+            # st.write('The two images are of the same person.')
         else:
-            st.write('The two images are of different people.')
+            st.markdown("The two images are not of the same person ❌")
+            # st.write('The two images are of different people.')
 
         # Load the selected images from the LFW folder
         # image1 = PIL.Image.open(os.path.join(lfw_path, file1_select, file1_image))
