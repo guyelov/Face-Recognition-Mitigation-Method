@@ -35,8 +35,8 @@ if __name__ == '__main__':
         # List the subfolders in the LFW folder
         image_files = os.listdir(lfw_path)
         # Create the select box
-        # selected_image = st.selectbox('Select an image:', image_files)
-        image = PIL.Image.open(os.path.join(lfw_path, image_files[0]))
+        selected_image = st.selectbox('Select an image:', image_files)
+        image = PIL.Image.open(os.path.join(lfw_path, selected_image))
         st.image(image)
 
         # Load the selected images from the LFW folder
