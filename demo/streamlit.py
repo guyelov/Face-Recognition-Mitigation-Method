@@ -27,8 +27,9 @@ if __name__ == '__main__':
 
     # Add the image to the sidebar
     # Add the image to the bottom left corner of the app
-    file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
-    file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
+    @st.cache
+    # file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
+    # file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     lfw_path = "demo/Data/LFW_Demo"
     if lfw_path:
