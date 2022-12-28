@@ -31,11 +31,28 @@ if __name__ == '__main__':
     # file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     # file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     lfw_path = "demo/Data/LFW_Demo"
+    image_names = [image for image in os.listdir(lfw_path) if os.path.isfile(os.path.join(lfw_path, image))]
+
+    # Extract the people names from the image names
+    people = [image[:-9] for image in image_names]
+
+    # Remove duplicates from the list of people names
+    people = list(set(people))
+
+    # Print the list of people
+
     if lfw_path:
         # List the subfolders in the LFW folder
-        image_files = os.listdir(lfw_path)
+
+        # Create a list of the images in the LFW folder
+
+
         # Create the select box
-        image_1,image_2 = st.multiselect('Select an image:', image_files,max_selections =2)
+        person_1,person_2 = st.multiselect('Select the people', people, default=['George_W_Bush', 'Donald_Rumsfeld'])
+        # Create the select box
+        image_1 = st.selectbox('Select the first image', [image for image in image_names if person_1 in image])
+        image_2 = st.selectbox('Select the second image', [image for image in image_names if person_2 in image])
+
         # Read the image
         image1 = PIL.Image.open(os.path.join(lfw_path, image_1))
         image2 = PIL.Image.open(os.path.join(lfw_path, image_2))
