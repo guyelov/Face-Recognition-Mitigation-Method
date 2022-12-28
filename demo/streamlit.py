@@ -9,7 +9,7 @@ from embedder_demo import Embedder
 from predictor_demo import Predictor
 from torchvision import transforms
 from data_utils_demo import load_predictor
-from facenet_pytorch import MTCNN
+# from facenet_pytorch import MTCNN
 
 
 def transform_image(image):
