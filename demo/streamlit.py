@@ -70,7 +70,6 @@ if __name__ == '__main__':
         embedder = Embedder(device=device, model_name='iresnet100', train=False)
         embedded_images = embedder(image1, image2)
         pred = predictor(embedded_images)[0]
-        st.write(predictor(embedded_images, return_proba=True))
         if pred == 1:
             st.write('The two images are of the same person.')
         else:
