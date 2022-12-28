@@ -48,7 +48,10 @@ if __name__ == '__main__':
 
 
         # Create the select box
-        person_1,person_2 = st.multiselect('Select the people', people, default=['George_W_Bush'])
+        person_1 = st.selectbox("Select the first person", people)
+        person_2 = st.selectbox("Select the second person", people)
+
+
         # Create the select box
         image_1 = st.selectbox('Select the first image', [image for image in image_names if person_1 in image])
         image_2 = st.selectbox('Select the second image', [image for image in image_names if person_2 in image])
