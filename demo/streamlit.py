@@ -48,20 +48,25 @@ if __name__ == '__main__':
 
 
         # Create the select box
-        person_1 = st.selectbox("Select the first person", people)
-        person_2 = st.selectbox("Select the second person", people)
+        person_1 = st.sidebar.selectbox('Select the first person', people)
+        person_2 = st.sidebar.selectbox('Select the second person', people)
+        # person_1 = st.selectbox("Select the first person", people)
+        # person_2 = st.selectbox("Select the second person", people)
 
 
         # Create the select box
-        image_1 = st.selectbox('Select the first image', [image for image in image_names if person_1 in image])
-        image_2 = st.selectbox('Select the second image', [image for image in image_names if person_2 in image])
+        image_1 = st.sidebar.selectbox('Select the first image', [image for image in image_names if person_1 in image])
+        image_2 = st.sidebar.selectbox('Select the second image', [image for image in image_names if person_2 in image])
+
+        # image_1 = st.selectbox('Select the first image', [image for image in image_names if person_1 in image])
+        # image_2 = st.selectbox('Select the second image', [image for image in image_names if person_2 in image])
 
         # Read the image
         image1 = PIL.Image.open(os.path.join(lfw_path, image_1))
         image2 = PIL.Image.open(os.path.join(lfw_path, image_2))
         # Show the image
-        st.sidebar.image(image1, caption='First image')
-        st.sidebar.image(image2, caption='Second image')
+        st.image(image1, caption='First image')
+        st.image(image2, caption='Second image')
 
         # Display an image in the main app area
         # st.image('image2.jpg')
