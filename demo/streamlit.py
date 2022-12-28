@@ -30,45 +30,42 @@ if __name__ == '__main__':
     file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    lfw_path = "demo/Data/lfw-py/lfw_funneled"
+    lfw_path = "demo/Data/LFW_Demo"
     if lfw_path:
         # List the subfolders in the LFW folder
-        person_folders = [f for f in os.listdir(lfw_path) if os.path.isdir(os.path.join(lfw_path, f))]
-        # List the images in the first selected subfolder
-        file1_select = st.selectbox("Select the first image from the LFW folder:", person_folders)
-        image_files = [f for f in os.listdir(os.path.join(lfw_path, file1_select)) if f.endswith(".jpg") or f.endswith(".png")]
-        file1_image = st.selectbox("Select the image:", image_files)
-        # List the images in the second selected subfolder
-        file2_select = st.selectbox("Select the second image from the LFW folder:", person_folders)
-        image_files = [f for f in os.listdir(os.path.join(lfw_path, file2_select)) if f.endswith(".jpg") or f.endswith(".png")]
-        file2_image = st.selectbox("Select the image:", image_files)
+        image_files = os.listdir(lfw_path)
+
+        # Create the select box
+        selected_image = st.selectbox('Select an image:', image_files)
+        st.image(image_files[0])
+
         # Load the selected images from the LFW folder
-        image1 = PIL.Image.open(os.path.join(lfw_path, file1_select, file1_image))
-        image2 = PIL.Image.open(os.path.join(lfw_path, file2_select, file2_image))
-    if file1 is None and file2 is None and not lfw_path:
-        st.write("Please upload two face images")
-    else:
-        if file2 is None and not lfw_path:
-            st.write("Please upload the second image")
-        else:
-            # image1 = PIL.Image.open(file1)
-            # image2 = PIL.Image.open(file2)
-            #
-
-            st.image(image1, caption='Uploaded Image.', use_column_width=True)
-            st.image(image2, caption='Uploaded Image.', use_column_width=True)
-
-            st.write("Classifying...")
-            image1 = transform_image(image1)
-            image2 = transform_image(image2)
-            device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-            predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
-            embedder = Embedder(device=device, model_name='iresnet100', train=False)
-            embedded_images = embedder(image1, image2)
-            pred = predictor(embedded_images)[0]
-            st.write(predictor(embedded_images, return_proba=True))
-            if pred == 1:
-                st.write('The two images are of the same person.')
-            else:
-                st.write('The two images are of different people.')
+        # image1 = PIL.Image.open(os.path.join(lfw_path, file1_select, file1_image))
+        # image2 = PIL.Image.open(os.path.join(lfw_path, file2_select, file2_image))
+    # if file1 is None and file2 is None and not lfw_path:
+    #     st.write("Please upload two face images")
+    # else:
+    #     if file2 is None and not lfw_path:
+    #         st.write("Please upload the second image")
+    #     else:
+    #         # image1 = PIL.Image.open(file1)
+    #         # image2 = PIL.Image.open(file2)
+    #         #
+    #
+    #         st.image(image1, caption='Uploaded Image.', use_column_width=True)
+    #         st.image(image2, caption='Uploaded Image.', use_column_width=True)
+    #
+    #         st.write("Classifying...")
+    #         image1 = transform_image(image1)
+    #         image2 = transform_image(image2)
+    #         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #         predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
+    #         embedder = Embedder(device=device, model_name='iresnet100', train=False)
+    #         embedded_images = embedder(image1, image2)
+    #         pred = predictor(embedded_images)[0]
+    #         st.write(predictor(embedded_images, return_proba=True))
+    #         if pred == 1:
+    #             st.write('The two images are of the same person.')
+    #         else:
+    #             st.write('The two images are of different people.')
     st.image(logo, width=100)
