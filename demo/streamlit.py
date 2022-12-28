@@ -65,9 +65,10 @@ if __name__ == '__main__':
         image1 = PIL.Image.open(os.path.join(lfw_path, image_1))
         image2 = PIL.Image.open(os.path.join(lfw_path, image_2))
         # Show the image
-        st.image(image1, caption='First image')
-        st.empty()
-        st.image(image2, caption='Second image')
+        st.image([image1, image2], caption=['Image 1', 'Image 2'], width=200)
+        # st.image(image1, caption='First image')
+        # st.empty()
+        # st.image(image2, caption='Second image')
 
         # Display an image in the main app area
         # st.image('image2.jpg')
