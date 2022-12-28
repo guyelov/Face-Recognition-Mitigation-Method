@@ -11,7 +11,7 @@ from torchvision import transforms
 from data_utils_demo import load_predictor
 # from facenet_pytorch import MTCNN
 
-
+@st.cache
 def transform_image(image):
     my_transforms = transforms.Compose([transforms.Resize((112, 112)),
                                         transforms.ToTensor(),
@@ -28,7 +28,6 @@ if __name__ == '__main__':
 
     # Add the image to the sidebar
     # Add the image to the bottom left corner of the app
-    @st.cache
     # file1 = st.file_uploader("Please upload the first image", type=["jpg", "png"])
     # file2 = st.file_uploader("Please upload the second image", type=["jpg", "png"])
     lfw_path = "demo/Data/LFW_Demo"
