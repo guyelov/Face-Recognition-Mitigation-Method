@@ -62,7 +62,19 @@ if __name__ == '__main__':
         # Show the image
         st.image(image1, caption='Image 1', use_column_width=True)
         st.image(image2, caption='Image 2', use_column_width=True)
-
+        st.write("Classifying...")
+        image1 = transform_image(image1)
+        image2 = transform_image(image2)
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        predictor = load_predictor("demo/iresnet100_checkpoint.pth", device)
+        embedder = Embedder(device=device, model_name='iresnet100', train=False)
+        embedded_images = embedder(image1, image2)
+        pred = predictor(embedded_images)[0]
+        st.write(predictor(embedded_images, return_proba=True))
+        if pred == 1:
+            st.write('The two images are of the same person.')
+        else:
+            st.write('The two images are of different people.')
 
         # Load the selected images from the LFW folder
         # image1 = PIL.Image.open(os.path.join(lfw_path, file1_select, file1_image))
