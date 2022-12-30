@@ -44,8 +44,9 @@ def target_model_creation(backbone_name, train_set, epoch_num, batch_size, devic
 
 
 if __name__ == '__main__':
-    train_set = load_LFW_pairs()
+    # train_set = load_LFW_pairs()
     batch_size = 64
     epoch_num = 30
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    target_model_creation('iresnet100', train_set, epoch_num, batch_size, device)
+    print(f'using device: {device}')
+    # target_model_creation('iresnet100', train_set, epoch_num, batch_size, device)
