@@ -94,28 +94,3 @@ class FR_Api(torch.nn.Module):
         embedding = self.embedder(image1, image2)
         prediction = self.predictor(embedding)
         return prediction
-    # def forward(self, x):
-    #     ''' Forward pass of the model. '''
-    #     prediction_array = []
-    #     for i in x:
-    #         image_pair = i
-    #         image_1, image_2 = image_pair[0], image_pair[1]
-    #
-    #         prob = True
-    #
-    #         emb_pred = self.embedder.embedder(image_1)
-    #         emb_pred2 = self.embedder.embedder(image_2)
-    #         res_of_sub = torch.subtract(emb_pred, emb_pred2)
-    #
-    #         y = self.predictor.nn(res_of_sub)
-    #         y_comp = 1.0 - y
-    #         y_two_class = torch.cat((y_comp, y), -1)
-    #         prediction_array.append(y_two_class)
-    #     #####
-    #     # y_comp= 1.0-y
-    #     # y_two_class = torch.cat((y_comp, y), -1)
-    #     #####
-    #     # return y_two_class
-    #
-    #     return torch.cat(prediction_array)
-    #     # return torch.FloatTensor(prediction_array)

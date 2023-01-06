@@ -1,0 +1,30 @@
+# Configuration file for Streamlit
+
+[server]
+headless = true
+
+[browser]
+serverAddress = "localhost"
+gatherUsageStats = false
+
+[logging]
+level = "ERROR"
+
+[static]
+path = "static"
+
+[css]
+unsafe_styles = """
+    .reportview-container .main {
+        max-width: 100%;
+    }
+"""
+
+[lib]
+css = [
+    "https://fonts.googleapis.com/css?family=Roboto",
+    "https://cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css",
+]
+
+[code]
+theme = "monokai"

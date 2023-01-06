@@ -157,7 +157,7 @@ def convert_images_to_embedded_input(data_loader, backbone, device):
             embedding = embedder(image1, image2)
             data_vectors.append(embedding)
     data_vectors = np.vstack(data_vectors)
-    np.save(f'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\{backbone}_data_vectors.npy', data_vectors)
+    np.save(f'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\{backbone}_data_demo_attacker_vectors.npy', data_vectors)
     return data_vectors
 def batch_test_prediction(fr, data_loder):
 
@@ -227,3 +227,43 @@ def load_predictor(traget_model_path,device = 'cpu'):
     NN.eval()
     predictor = Predictor(predictor="NN", nn_instance=NN, threshold=0.5, device=device)
     return predictor
+def batch_convert_data_to_net_input_from_multiple_backbones(data_loder, saving_path_and_name,seed=None,backbone_list=None):
+    """
+    This function converts the data to the input of the backbone.
+    :param data: Required. The data to convert.
+    :param embedder_name: Required. The name of the backbone to use.
+    :param saving_path_and_name: Required. The path and name to save the converted data.
+    :return: The converted data.
+    """
+    data_vectors = []
+    backbones_list = embedder_generator(seed,backbone_list)
+    count = 0
+    num_backbones = len(backbones_list)
+    for i, (image1, image2, label) in enumerate(tqdm(data_loder)):
+        with torch.no_grad():
+
+            image1 = image1.to(device)
+            image2 = image2.to(device)
+            embedder = Embedder(device=device, model_name=backbones_list[count], train=False)
+            count += 1
+            embedding = embedder(image1, image2)
+            data_vectors.append(embedding)
+            if count == num_backbones:
+                count = 0
+    data_vectors = np.vstack(data_vectors)
+    np.save(saving_path_and_name, data_vectors)
+    return data_vectors
+
+
+def embedder_generator(seed=None,backbone_list=None):
+    if not backbone_list:
+        backbones = ["MobileFaceNet", "ResNet50-ir", "ResNet152-irse", "HRNet", "EfficientNet-B0", "TF-NAS-A",
+                 "LightCNN-29", "GhostNet", "AttentionNet-56", "Attention-92(MX)", "ResNeSt50", "ReXNet_1.0",
+                 "RepVGG_A0", "RepVGG_B0", "RepVGG_B1", 'iresnet100']
+    else:
+        backbones = backbone_list
+    if seed:
+        random.Random(seed).shuffle(backbones)
+    else:
+        random.shuffle(backbones)
+    return backbones

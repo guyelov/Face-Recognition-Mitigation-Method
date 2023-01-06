@@ -35,8 +35,8 @@ class Embedder(torch.nn.Module):
         ######################################
         if faceX_zoo:
             print(f"Model Name: {model_name}")
-            model_path = f"FR_System/Embedder/Pretrained Backbones/{model_name}.pt"
-            conf_path = r"ModelX_Zoo/test_protocol/backbone_conf.yaml"
+            model_path = f"C:\\Users\guyel\PycharmProjects\Face Recognition Mitigation Method\ModelX_Zoo\Pretrained Backbones\{model_name}.pt"
+            conf_path = r"C:\Users\guyel\PycharmProjects\Face Recognition Mitigation Method\ModelX_Zoo\test_protocol\backbone_conf.yaml"
             ModelFactory = BackboneFactory(model_name, conf_path)
             model_loader = ModelLoader(ModelFactory)
             if train:

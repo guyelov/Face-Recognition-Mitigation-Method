@@ -123,7 +123,7 @@ class Predictor(nn.Module):
         model.eval()
         return model
 
-    def net(self, vector, return_proba=False):
+    def net(self, vector, return_proba, art):
         """
         The method returns the probability for class 1 according to the trained NN.
         :param vector1: Required. Type: ndarray/torch tensor. Image vector 1
@@ -131,6 +131,9 @@ class Predictor(nn.Module):
         :param return_proba: Optional. Type: boolean. Whether to return the probability. Default is False.
         :return:
         """
+        if art:
+            proba = self.nn(torch.tensor(vector).float().to(self.device))
+            return proba
         if torch.is_tensor(vector):
             diff = vector
             proba = self.nn(torch.tensor(diff, device=self.device).float())
@@ -145,8 +148,8 @@ class Predictor(nn.Module):
             lst = list(map(int, (proba >= self.threshold).reshape(-1)))
             return list(map(int, (proba >= self.threshold).reshape(-1)))
 
-    def forward(self, vector, return_proba=False):
-        return self.net(vector, return_proba)
+    def forward(self, vector, return_proba=False, art=True):
+        return self.net(vector, return_proba, art)
 
     def load_checkpoint(self, path, model, optimizer):
         """

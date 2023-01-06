@@ -1,0 +1,54 @@
+/* Add a custom background image to the body of the app */
+body {
+  background-image: url('\static\bg.jpg');
+  background-size: cover;
+  background-position: center;
+}
+
+/* Use a custom color scheme for the main content area */
+.reportview-container .main {
+  background-color: #f5f5f5;
+  color: #333;
+  padding: 20px;
+}
+
+/* Use a custom color scheme for the sidebar */
+.reportview-container .sidebar {
+  background-color: #222;
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Use a custom font for headings in the main content area */
+.reportview-container .main h1,
+.reportview-container .main h2,
+.reportview-container .main h3,
+.reportview-container .main h4,
+.reportview-container .main h5,
+.reportview-container .main h6 {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Use a custom font for headings in the sidebar */
+.reportview-container .sidebar h1,
+.reportview-container .sidebar h2,
+.reportview-container .sidebar h3,
+.reportview-container .sidebar h4,
+.reportview-container .sidebar h5,
+.reportview-container .sidebar h6 {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Use a custom font for text in the sidebar */
+.reportview-container .sidebar {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Use custom icons in the sidebar */
+.sidebar-icon {
+  background-image: url('/static/icon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 32px;
+  height: 32px;
+}
