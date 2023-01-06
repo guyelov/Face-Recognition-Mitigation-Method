@@ -51,7 +51,7 @@ class Predictor(nn.Module):
         self.threshold = threshold
 
     def train_NN(self, x_train, y_train, lossf=torch.nn.BCEWithLogitsLoss(), batch_size=128, epoch_num=40,
-                 lr=0.0001, saving_path="", embeder=None, n_in=None):
+                 lr=0.0001, saving_path="", n_in=None):
         """
         Train an NN to use as a predictor.
         :param x_train: Required. Type: ndarray/torch tensor. The training data for the NN.
@@ -125,11 +125,11 @@ class Predictor(nn.Module):
 
     def net(self, vector, return_proba, art):
         """
-        The method returns the probability for class 1 according to the trained NN.
-        :param vector1: Required. Type: ndarray/torch tensor. Image vector 1
-        :param vector2: Required. Type: ndarray/torch tensor. Image vector 2
-        :param return_proba: Optional. Type: boolean. Whether to return the probability. Default is False.
-        :return:
+        this function is used to predict the label of a given vector.
+        :param vector: a difference between two images embeddings.
+        :param return_proba: if True, the function will return the probability of the prediction.
+        :param art: if True, the function will return the probability of the prediction in ART format.
+        :return: the prediction of the vector.
         """
         if art:
             proba = self.nn(torch.tensor(vector).float().to(self.device))
