@@ -1,4 +1,5 @@
-# Attacks
+# Attacks :no_entry:
+
 This folder contains existing privacy violation attacks that can be applied to face recognition (FR) systems.
 These attacks can be used to test the effectiveness of the FR system and the mitigation method implemented in
 this repository.
