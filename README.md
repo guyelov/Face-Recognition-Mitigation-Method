@@ -5,7 +5,7 @@ In addition, we have included a demo app that allows users to test the model wit
 
 The repository is organized into the following folders:
 
-- [Attacks](https://github.com/guyelov/Face-Recognition-Mitigation-Method/tree/master/Attacks/Membership_Inference) - contains existing privacy violation attacks :no_entry:
+- [Attacks](https://github.com/guyelov/Face-Recognition-Mitigation-Method/tree/master/Attacks) - contains existing privacy violation attacks :no_entry:
 
 - [Data](https://github.com/guyelov/Face-Recognition-Mitigation-Method/tree/master/Data) - contains pre-trained models and data utilities for processing images :file_folder:
 - [FR System](https://github.com/guyelov/Face-Recognition-Mitigation-Method/tree/master/FR_System) - contains the face recognition model with the embedder and predictor
