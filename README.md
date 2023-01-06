@@ -19,5 +19,7 @@ To create a target model without the mitigation method, do the following:
 - download from [here](https://github.com/guyelov/Face-Recognition-Mitigation-Method/blob/master/Data/iresnet100_checkpoint.pth) the IResNet100
 - change in the [iresnet](https://github.com/guyelov/Face-Recognition-Mitigation-Method/blob/master/FR_System/Embedder/iresnet.py) at line 248  the path of the iresnet100.pth file to the path of the downloaded file.
 - run the [target_model_creation.py](https://github.com/guyelov/Face-Recognition-Mitigation-Method/blob/master/demo/target_model_creation_demo.py) file and this will create the target model.
-note that there is no need to download the LFW dataset because in the target_model_creation.py its downloaded automatically.
+Note that there is no need to download the LFW dataset because in the target_model_creation.py its downloaded automatically.
+
+For more information about the target model structure, please refer to the [FR System](https://github.com/guyelov/Face-Recognition-Mitigation-Method/tree/master/FR_System) folder.
 
