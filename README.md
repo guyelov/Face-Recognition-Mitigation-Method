@@ -13,7 +13,7 @@ The repository is organized into the following folders:
 - [Demo](https://github.com/guyelov/Face-Recognition-Mitigation-Method/tree/master/demo) - contains the streamlet app for testing the FR system and mitigation method 
 :computer:
 
-## How to create target models? :question:
+## How to create target models:question:
 To create a target model without the mitigation method, do the following:
 - clone the repository or download the files
 - download from [here](https://github.com/guyelov/Face-Recognition-Mitigation-Method/blob/master/Data/iresnet100_checkpoint.pth) the IResNet100
