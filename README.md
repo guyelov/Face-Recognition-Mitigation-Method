@@ -1,5 +1,6 @@
 # Face Recognition Mitigation Method :lock:
 In this repository, we have implemented a method to protect against privacy violation attacks on face recognition (FR) systems. The repository contains the FR system that the mitigation method will be applied to, as well as support for existing publicly available privacy violation attacks (such as membership inference and model inversion).
+For more information about the method, please see the [system presentation](
 
 In addition, we have included a demo app that allows users to test the model with their own images or images from the LFW (Labeled Faces in the Wild) dataset. The demo app demonstrates the performance of the FR system and shows how the mitigation method can protect against a membership attack.
 
