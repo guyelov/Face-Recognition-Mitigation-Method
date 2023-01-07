@@ -1,4 +1,4 @@
-# Face Recognition Mitigation Methods Hackathon Demo :machine:
+# Face Recognition Mitigation Methods Hackathon Demo :page_facing_up:
 
 This repository contains a demo app for the Face Recognition Mitigation Methods Hackathon.
 Its contains two main components:
