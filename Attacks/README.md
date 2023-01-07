@@ -8,6 +8,5 @@ The implementation of the attacks is based one the [Adversarial Robustness Toolb
 
 Currently, the following attacks are supported:
 - [Membership Inference](https://github.com/guyelov/Face-Recognition-Mitigation-Method/blob/38cd300509632d4f87279188deb305ceedf2a48b/Attacks/Membership_Inference/MembershipAttack.py): This attack attempts to determine whether an individual's data was used to train the FR model.
-Instructions on how to use these attacks can be found in the respective folders.
 
 Please note that these attacks are for research and testing purposes only and should not be used maliciously. :warning:
