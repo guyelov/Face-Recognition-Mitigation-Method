@@ -1,83 +1,137 @@
-import os
-import shutil
+from math import sqrt
 
-# from facenet_pytorch import MTCNN
-import numpy as np
-from tqdm import tqdm
-import pandas as pd
 
-lfw_path = 'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\LFW_Demo'
-def load_lfw(attack=False):
-    """"""
-    lfw_train = pd.read_csv(
-        'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\demo_train.csv')
-    lfw_test = pd.read_csv(
-        'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\demo_test.csv')
-    train_images = lfw_train['image1'].tolist() + lfw_train['image2'].tolist()
-    test_images = lfw_test['image1'].tolist() + lfw_test['image2'].tolist()
-    if attack:
-        lfw_attack = pd.read_csv(
-            'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\attack_demo_data.csv')
-        attack_images = lfw_attack['image1'].tolist() + lfw_attack['image2'].tolist()
-        return train_images, attack_images
-    return train_images, test_images
+def calcRandomMse(origRatingsDict, randomMethod, numOfRandomRatings):
+    mse = 0
 
-def create_membership_pairs(train_set,attacker_set):
-    names_train = []
+    if randomMethod == 'uniform':
+    # calculating uniformly random ratings:
+        for key in origRatingsDict:
+            for i in range(numOfRandomRatings):
+                randomRating = random.uniform(1, 5)
+                print(origRatingsDict[key])
+                mse += (randomRating - origRatingsDict[key]['original rating']) ** 2
 
-    for index, row in train_set.iterrows():
-        name1 = row['image1'].split('\\')[-1]  # split the file path by '' and then by '', and take all elements except the last (4-digit number)
-        name2 = row['image2'].split('\\')[-1] # same process for image2
+    if randomMethod == 'stratified':
+    # calculating a permutation of the original ratings:
+    # hint - shuffle the indices of the original values.
+        for key in origRatingsDict:
+            originalRating = origRatingsDict[key]['original rating']
+            keys = list(origRatingsDict.keys())
+            random.shuffle(keys)
+            for i in range(numOfRandomRatings):
+                randomRating = origRatingsDict[keys[i]]['original rating']
+                mse += (randomRating - originalRating) ** 2
 
-        full_name1 = ''.join(name1)  # join first and last name with a space
-        full_name2 = ''.join(name2)  # same for image2
-        names_train.append(full_name1 + ' and ' + full_name2)  # combine the two names and append to the list
-    names_attacker = []
-    for index, row in attacker_set.iterrows():
-        name1 = row['image1'].split('\\')[-1]
-        name2 = row['image2'].split('\\')[-1]
-        full_name1 = ''.join(name1)
-        full_name2 = ''.join(name2)
-        names_attacker.append(full_name1 + ' and ' + full_name2)
-    names_train = np.array(names_train)
-    names_attacker = np.array(names_attacker)
-    np.save('C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\names_train.npy', names_train)
-    np.save('C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\names_attacker.npy', names_attacker)
-    return names_train, names_attacker
-def create_lfw_folder():
-    root_folder  = "C:\\Users\guyel\PycharmProjects\Deep Learning\Assigment 2\lfw-py rgb\lfw_funneled"
-    destination_folder  = "C:\\Users\guyel\PycharmProjects\Face Recognition Mitigation Method\demo\Data\LFW_Demo"
-    if not os.path.exists(destination_folder):
-        os.makedirs(destination_folder)
+    for rIdx in range(numOfRandomRatings):
+    # calculating the square of the difference between the original and ranrom value and add it to mse variable:
+        mse += (origRatingsDict[key]['original rating'] - randomRating) ** 2
+    # averaging the sum of the square differences:
+    mse = mse / (len(origRatingsDict) * numOfRandomRatings)
 
-    # Iterate over the subfolders
-    total_images = sum([len(files) for r, d, files in os.walk(root_folder)])
+    return mse
 
-    with tqdm(total=total_images) as pbar:
-        for subfolder in os.listdir(root_folder):
-            subfolder_path = os.path.join(root_folder, subfolder)
-            if os.path.isdir(subfolder_path):
-                # Iterate over the images in the subfolder
-                for image in os.listdir(subfolder_path):
-                    image_path = os.path.join(subfolder_path, image)
-                    # Check if the file is an image
-                    if image.endswith('.jpg') or image.endswith('.png'):
-                        # Copy the image to the destination folder
-                        shutil.copy(image_path, destination_folder)
-                        # Update the progress bar
-                        pbar.update(1)
 
-    print('Done!')
-def num_intersection(lst1, lst2):
-    return len(list(set(lst1) & set(lst2)))
-    print('Done!')
-if __name__ == '__main__':
-    train_set = pd.read_csv(
-        'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\target_model_demo_data.csv')
-    attacker_set = pd.read_csv(
-        'C:\\Users\\guyel\\PycharmProjects\\Face Recognition Mitigation Method\\demo\\Data\\attack_demo_data.csv')
-    # create_lfw_folder()
-    names_train, names_attacker = create_membership_pairs(train_set, attacker_set)
-    print(num_intersection(names_train, names_attacker))
-    print(len(names_train))
-    print(len(names_attacker))
+
+def getMovieRecommendation(ratingsDF, userID, movieID, normalizeRatings=False):
+    userIDlist = list(ratingsDF.index)
+    numOfOtherRated = 0
+    maxAbsRate = -np.infty
+
+    # calculate user's ratings average:
+    userAvg = 0
+    numOfUserRated = 0
+    for movieID in ratingsDF.columns:
+        movieRatingByUser = list(ratingsDF[movieID].loc[[userID]])[0]
+        if movieRatingByUser != '?':
+            userAvg += movieRatingByUser
+            numOfUserRated += 1
+    userAvg = userAvg / numOfUserRated
+
+
+    # Gets recommendations for a person by using a weighted average of every other user's rankings
+    total = 0
+    rankings_list = []
+    for otherID in userIDlist:
+
+        # don't compare me to myself
+        if otherID == userID:
+            continue
+
+        sim = pearson_correlation_from_DF(userID, otherID, ratingsDF)
+        print('similarity of user ' + str(userID) + ' with user ' + str(otherID) + ' is: ' + str(sim))
+
+        # calculate other user's ratings average:
+        otherAvg = 0
+        numOfOtherRated = 0
+        for movieID in ratingsDF.columns:
+            movieRatingByOther = list(ratingsDF[movieID].loc[[otherID]])[0]
+            if movieRatingByOther != '?':
+                otherAvg += movieRatingByOther
+                numOfOtherRated += 1
+        otherAvg = otherAvg / numOfOtherRated
+
+
+        movieRatingByOther = list(ratingsDF[movieID].loc[[otherID]])[0]
+        movieRatingByUser = list(ratingsDF[movieID].loc[[userID]])[0]
+
+        # if other user has rated current movie
+        if movieRatingByOther != '?':
+            numOfOtherRated += 1
+
+            # normalize other's rating of movieID:
+            if normalizeRatings:
+                movieRatingByOther = movieRatingByOther - otherAvg
+
+
+            # Similarity * score
+            total += sim * movieRatingByOther
+
+
+    # calculate recommendation:
+    if numOfOtherRated == 0:
+        return 0
+    else:
+        if normalizeRatings:
+            return userAvg + (total / numOfOtherRated)
+        else:
+            return total / numOfOtherRated
+
+
+
+
+def pearson_correlation_from_DF(userID, otherID, ratingsDF):
+    # To get both rated items
+    both_rated = {}
+    for movieID in ratingsDF.columns:
+        movieRatingByOther = list(ratingsDF[movieID].loc[[otherID]])[0]
+        movieRatingByUser = list(ratingsDF[movieID].loc[[userID]])[0]
+
+        if (movieRatingByOther != '?') and (movieRatingByUser != '?'):
+            both_rated[movieID] = 1
+
+    number_of_ratings = len(both_rated)
+
+    # Checking for number of ratings in common
+    if number_of_ratings == 0:
+        return 0
+
+    # Add up all the preferences of each user
+    user_preferences_sum = sum([list(ratingsDF[movieID].loc[[userID]])[0] for movieID in both_rated])
+
+    # Sum up the squares of preferences of each user
+    user_square_preferences_sum = sum([pow(list(ratingsDF[movieID].loc[[userID]])[0], 2) for movieID in both_rated])
+
+    # Sum up the product value of both preferences for each item
+    product_sum_of_both_users = sum([list(ratingsDF[movieID].loc[[userID]])[0] * list(ratingsDF[movieID].loc[[otherID]])[0] for movieID in both_rated])
+
+    # Calculate the pearson score
+    numerator_value = product_sum_of_both_users - (user_preferences_sum * sum([list(ratingsDF[movieID].loc[[otherID]])[0] for movieID in both_rated]) / number_of_ratings)
+    if numerator_value == 0:
+        return 0
+    denominator_value = sqrt((user_square_preferences_sum - pow(user_preferences_sum, 2) / number_of_ratings) * (sum([pow(list(ratingsDF[movieID].loc[[otherID]])[0], 2) for movieID in both_rated]) - pow(sum([list(ratingsDF[movieID].loc[[otherID]])[0] for movieID in both_rated]), 2) / number_of_ratings))
+    if denominator_value == 0:
+        return 0
+    else:
+        r = numerator_value / denominator_value
+        return r

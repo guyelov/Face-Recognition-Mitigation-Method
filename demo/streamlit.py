@@ -11,6 +11,7 @@ from FR_System.Embedder.embedder import Embedder
 import torch
 import numpy as np
 
+import base64
 
 @st.cache
 def predict(image_1, image_2, art=True):
