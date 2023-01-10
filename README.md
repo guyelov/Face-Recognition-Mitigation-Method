@@ -1,5 +1,5 @@
 # FaceBone - A Multiple Backbones Mitigation Method :lock:
-In this repository, we have implemented a method to protect against privacy violation attacks on face recognition (FR) systems. The repository contains the FR system that the mitigation method will be applied to, as well as support for existing publicly available privacy violation attacks (such as membership inference and model inversion).
+In this repository, we have implemented a FaceBone, a mitigation method to protect against privacy violation attacks on face recognition (FR) systems. The repository contains the FR system that the mitigation method will be applied to, as well as support for existing publicly available privacy violation attacks (such as membership inference and model inversion).
 
 For more information about the method, please see the [system presentation](https://github.com/guyelov/Face-Recognition-Mitigation-Method/blob/master/demo/%5B01%5D%20FR%20Mitigation%20Methods%20Hackathon%20Demo.pdf).
 
